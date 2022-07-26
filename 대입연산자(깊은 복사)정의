@@ -1,0 +1,112 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+class Book
+{
+private:
+	char* title;  //책의 이름
+	char* isbn;   //시리얼넘버
+	int price;    //가격
+public:
+	Book(const char* title, const char* isbn, int value)    //생성자 정의
+		:price(value)
+	{
+		this->title = new char[strlen(title) + 1];
+		this->isbn = new char[strlen(isbn) + 1];
+		strcpy(this->title, title);
+		strcpy(this->isbn, isbn);
+	}
+	Book(const Book& ref)     //복사생성자 정의
+	{
+		title = new char[strlen(ref.title) + 1];
+		isbn = new char[strlen(ref.isbn) + 1];
+		strcpy(title, ref.title);
+		strcpy(isbn, ref.isbn);
+		price = ref.price;
+	}
+	void ShowBookInfo() const
+	{
+		cout << "제목: " << title << endl;
+		cout << "ISBN: " << isbn << endl;
+		cout << "가격: " << price << endl;
+	}
+	~Book()
+	{
+		delete[] title;
+		delete[] isbn;
+	}
+	Book& operator=(const Book& ref)    //operator를 이용한 대입 연산자 정의
+	{
+		delete[] title;
+		delete[] isbn;
+
+		title = new char[strlen(ref.title) + 1];
+		isbn = new char[strlen(ref.isbn) + 1];
+		strcpy(title, ref.title);
+		strcpy(isbn, ref.isbn);
+		price = ref.price;
+
+		return *this;
+	}
+};
+
+class EBook : public Book
+{
+private:
+	char* DRMKey;   //디지털 인증키
+public:
+	EBook(const char* title, const char* isbn, int value, const char* key)
+		:Book(title, isbn, value)
+	{
+		DRMKey = new char[strlen(key) + 1];
+		strcpy(DRMKey, key);
+	}
+	EBook(const EBook& ref)
+		: Book(ref)
+	{
+		DRMKey = new char[strlen(ref.DRMKey) + 1];
+		strcpy(DRMKey, ref.DRMKey);
+	}
+	void ShowEBookInfo() const
+	{
+		ShowBookInfo();
+		cout << "인증키: " << DRMKey << endl;
+	}
+	~EBook()
+	{
+		delete[] DRMKey;
+	}
+	EBook& operator=(const EBook& ref)
+	{
+		Book::operator=(ref);
+		delete[] DRMKey;
+		DRMKey = new char[strlen(ref.DRMKey) + 1];
+		strcpy(DRMKey, ref.DRMKey);
+		return *this;
+	}
+};
+
+int main(void)
+{
+	Book book1("hiC++", "222-33333-423", 10000);
+	EBook ebook1("byeC", "123-2323-112", 8000, "12345");
+	EBook ebook2 = ebook1;
+	Book book3("simpson", "122-45-4511", 100);
+	EBook ebook3("empty", "112-119-1364", 200, "empty");
+
+	book3 = book1;
+	ebook3 = ebook1;
+
+	book1.ShowBookInfo();
+	cout << endl;
+	ebook1.ShowEBookInfo();
+	cout << endl;
+	ebook2.ShowEBookInfo();
+	cout << endl;
+	book3.ShowBookInfo();
+	cout << endl;
+	ebook3.ShowEBookInfo();
+
+	return 0;
+}
