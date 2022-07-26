@@ -1,0 +1,48 @@
+#include <iostream>
+#include <cstring>
+
+using std::cout;
+using std::endl;
+
+class BoundCheckIntArray
+{
+private:
+	int* arr;
+	int arrlen;
+	BoundCheckIntArray(const BoundCheckIntArray& arr) { }				//배열접근의 안전성을 높이기 위해
+	BoundCheckIntArray& operator=(const BoundCheckIntArray& arr) { }	//복사연산자와 대입연산자를 원천적으로 막기
+public:
+	BoundCheckIntArray(int len) : arrlen(len)
+	{
+		arr = new int[len];
+	}
+	int& operator[](unsigned int idx)		//예제는 int idx로 설정하고 if문에 idx < 0 || idx >= arrlen 으로 되있음.
+	{
+		if (idx >=arrlen)
+		{
+			cout << "Array index out of bound exception" << endl;
+			exit(1);
+		}
+		return arr[idx];
+	}
+	~BoundCheckIntArray()
+	{
+		delete[] arr;
+	}
+};
+
+int main(void)
+{
+	BoundCheckIntArray arr(5);
+	for (int i = 0; i < 5; i++)
+		arr[i] = (i + 1) * 11;
+	for (int i = 0; i < 6; i++)   //23줄의 경고문 호출을 유도함. (벗어난 범위의 배열접근결과 확인)
+		cout << arr[i] << endl;
+
+	/*
+	BoundCheckIntArray cpy1(5);
+	cpy1 = arr;				//안전하지 않은 코드
+	BoundCheckIntArray copy = arr;// 안전하지 않은 코드
+	*/
+	return 0;
+}
