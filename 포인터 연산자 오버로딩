@@ -1,0 +1,33 @@
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
+class Number
+{
+private:
+	int num;
+public:
+	Number(int n) : num(n) { }
+	void ShowData() const { cout << num << endl; }
+
+	Number* operator->() 
+	{
+		return this;		//객체 자신의 주소값을 반환
+	}
+	Number& operator*()
+	{
+		return *this;		//객체 자신을 참조의 형태로 반환
+	}
+};
+
+int main(void)
+{
+	Number num(20);
+	num.ShowData();
+	(*num) = 30;		//(num.operator*()) = 30;
+	num->ShowData();	//(num.operator->())->ShowData();
+	(*num)->ShowData();
+
+	return 0;
+}
