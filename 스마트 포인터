@@ -1,0 +1,73 @@
+#include <iostream>
+
+using std::cout;
+using std::endl;
+using std::ostream;
+
+class Point
+{
+private:
+	int xpos, ypos;
+public:
+	Point(int x = 0, int y = 0) : xpos(x), ypos(y)
+	{
+		cout << "Point 객체 생성" << endl;  //생성 확인용 메시지
+	}
+	~Point()
+	{
+		cout << "Point 객체 소멸" << endl;  //소멸 확인용 메시지
+	}
+	void SetPos(int x, int y)
+	{
+		xpos = x;
+		ypos = y;
+	}
+	friend ostream& operator<<(ostream&, Point&);
+};
+
+ostream& operator<<(ostream& os, Point& pos)
+{
+	cout << '[' << pos.xpos << ", " << pos.ypos << ']' << endl;
+	return os;
+}
+
+class SmartPtr
+{
+private:
+	Point* posptr;
+public:
+	SmartPtr(Point* ptr) : posptr(ptr) { }
+	Point& operator*() const
+	{
+		return *posptr;
+	}
+	Point* operator->() const
+	{
+		return posptr;
+	}
+	~SmartPtr()
+	{
+		delete posptr;
+	}
+};
+
+int main(void)
+{
+	SmartPtr sptr1(new Point(1, 2));
+	SmartPtr sptr2(new Point(2, 3));
+	SmartPtr sptr3(new Point(3, 4));
+
+	cout << *sptr1;		//[1, 2]
+	cout << *sptr2;		//[2, 3]
+	cout << *sptr3;		//[3, 4]
+
+	sptr1->SetPos(10, 20);
+	sptr2->SetPos(30, 40);
+	sptr3->SetPos(50, 60);
+
+	cout << *sptr1;		//[10, 20]
+	cout << *sptr2;		//[30, 40]
+	cout << *sptr3;		//[50, 60]
+
+	return 0;
+}
